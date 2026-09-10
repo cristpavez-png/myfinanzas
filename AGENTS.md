@@ -79,7 +79,7 @@ Todo cambio se integra a develop vía Pull Request con revisión cruzada entre C
 Seguridad
 Nunca commitear secretos, credenciales ni archivos .env. Usar .env.example como referencia.
 Contraseñas siempre con hash bcrypt en el backend.
-Sesión manejada con JWT; evaluar cookie httpOnly antes de usar localStorage en el frontend.
+Sesión manejada con JWT en cookie httpOnly (SameSite=Lax en desarrollo; SameSite=None + Secure en producción vía `AUTH_COOKIE_SECURE=true`). El backend acepta `Authorization: Bearer` solo como fallback para pruebas/clientes de API; el frontend no guarda tokens en localStorage. Cierre de sesión vía POST /auth/logout.
 Un usuario nunca debe poder ver ni modificar datos (deudas, perfil) de otro usuario fuera de su grupo — validar esto en cada endpoint protegido, no solo en el frontend.
 Testing
 Backend: pytest para pruebas de endpoints y lógica de negocio (especialmente el motor de cálculo de distribución del Hito 4).

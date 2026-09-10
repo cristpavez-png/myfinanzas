@@ -22,7 +22,6 @@ import {
   DeleteOutlined,
 } from "@ant-design/icons";
 import dayjs from "dayjs";
-import { useAuth } from "@/lib/auth";
 import { api, ApiError } from "@/lib/api";
 
 const { Title } = Typography;
@@ -80,7 +79,6 @@ interface DeudaFormValues {
 /* ── Component ────────────────────────────────────────── */
 
 export default function MisDeudas() {
-  const { token } = useAuth();
   const [deudas, setDeudas] = useState<Deuda[]>([]);
   const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
@@ -88,15 +86,15 @@ export default function MisDeudas() {
   const [submitting, setSubmitting] = useState(false);
   const [form] = Form.useForm<DeudaFormValues>();
 
+  // El estado inicial de loading ya es true; en refetches posteriores la
+  // tabla mantiene los datos actuales mientras llega la respuesta.
   const fetchDeudas = useCallback(() => {
-    if (!token) return;
-    setLoading(true);
     api
-      .get<Deuda[]>("/deudas", { token })
+      .get<Deuda[]>("/deudas")
       .then(setDeudas)
       .catch(() => message.error("Error al cargar deudas"))
       .finally(() => setLoading(false));
-  }, [token]);
+  }, []);
 
   useEffect(() => {
     fetchDeudas();
@@ -140,10 +138,10 @@ export default function MisDeudas() {
       };
 
       if (editing) {
-        await api.put(`/deudas/${editing.id}`, payload, { token });
+        await api.put(`/deudas/${editing.id}`, payload);
         message.success("Deuda actualizada");
       } else {
-        await api.post("/deudas", payload, { token });
+        await api.post("/deudas", payload);
         message.success("Deuda creada");
       }
 
@@ -160,7 +158,7 @@ export default function MisDeudas() {
 
   const handleDelete = async (id: number) => {
     try {
-      await api.delete(`/deudas/${id}`, { token });
+      await api.delete(`/deudas/${id}`);
       message.success("Deuda eliminada");
       fetchDeudas();
     } catch (err) {

@@ -7,7 +7,6 @@ import {
   ClockCircleOutlined,
   CheckCircleOutlined,
 } from "@ant-design/icons";
-import { useAuth } from "@/lib/auth";
 import { api } from "@/lib/api";
 
 const { Title } = Typography;
@@ -23,18 +22,16 @@ interface Deuda {
 }
 
 export default function PanelResumen() {
-  const { token } = useAuth();
   const [deudas, setDeudas] = useState<Deuda[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!token) return;
     api
-      .get<Deuda[]>("/deudas", { token })
+      .get<Deuda[]>("/deudas")
       .then(setDeudas)
       .catch(() => {})
       .finally(() => setLoading(false));
-  }, [token]);
+  }, []);
 
   if (loading) {
     return (

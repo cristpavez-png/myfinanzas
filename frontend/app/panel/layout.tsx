@@ -27,18 +27,18 @@ export default function PanelLayout({
 }) {
   const router = useRouter();
   const pathname = usePathname();
-  const { token, loading, logout } = useAuth();
+  const { user, loading, logout } = useAuth();
   const {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
 
   useEffect(() => {
-    if (!loading && !token) {
+    if (!loading && !user) {
       router.replace("/login");
     }
-  }, [loading, token, router]);
+  }, [loading, user, router]);
 
-  if (loading || !token) {
+  if (loading || !user) {
     return (
       <div
         style={{
@@ -53,7 +53,13 @@ export default function PanelLayout({
     );
   }
 
-  const selectedKey = menuItems.find((m) => pathname.startsWith(m.key))?.key ?? "/panel";
+  // "/panel" es prefijo de todas las demás rutas: se compara exacto,
+  // y el resto por prefijo.
+  const selectedKey =
+    pathname === "/panel"
+      ? "/panel"
+      : menuItems.find((m) => m.key !== "/panel" && pathname.startsWith(m.key))
+          ?.key ?? "/panel";
 
   return (
     <Layout style={{ minHeight: "100vh" }}>
@@ -97,8 +103,8 @@ export default function PanelLayout({
         >
           <Button
             icon={<LogoutOutlined />}
-            onClick={() => {
-              logout();
+            onClick={async () => {
+              await logout();
               router.push("/login");
             }}
           >

@@ -12,29 +12,24 @@ export class ApiError extends Error {
   }
 }
 
-interface RequestOptions extends Omit<RequestInit, "method" | "body"> {
-  token?: string | null;
-}
-
 async function request<T>(
   method: string,
   path: string,
   body?: unknown,
-  opts: RequestOptions = {},
+  opts?: Omit<RequestInit, "method" | "body" | "credentials">,
 ): Promise<T> {
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
-    ...((opts.headers as Record<string, string>) ?? {}),
+    ...((opts?.headers as Record<string, string>) ?? {}),
   };
-
-  if (opts.token) {
-    headers["Authorization"] = `Bearer ${opts.token}`;
-  }
 
   const res = await fetch(`${API_BASE}${path}`, {
     method,
     headers,
     body: body != null ? JSON.stringify(body) : undefined,
+    // La sesión viaja en cookie httpOnly que emite el backend.
+    credentials: "include",
+    ...opts,
   });
 
   const data = await res.json().catch(() => null);
@@ -49,15 +44,11 @@ async function request<T>(
 }
 
 export const api = {
-  get: <T>(path: string, opts?: RequestOptions) =>
-    request<T>("GET", path, undefined, opts),
+  get: <T>(path: string) => request<T>("GET", path),
 
-  post: <T>(path: string, body?: unknown, opts?: RequestOptions) =>
-    request<T>("POST", path, body, opts),
+  post: <T>(path: string, body?: unknown) => request<T>("POST", path, body),
 
-  put: <T>(path: string, body?: unknown, opts?: RequestOptions) =>
-    request<T>("PUT", path, body, opts),
+  put: <T>(path: string, body?: unknown) => request<T>("PUT", path, body),
 
-  delete: <T>(path: string, opts?: RequestOptions) =>
-    request<T>("DELETE", path, undefined, opts),
+  delete: <T>(path: string) => request<T>("DELETE", path),
 };

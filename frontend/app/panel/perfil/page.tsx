@@ -1,48 +1,41 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Form, Input, InputNumber, Button, Typography, Card, message, Spin } from "antd";
-import { UserOutlined, DollarOutlined } from "@ant-design/icons";
+import { Form, Input, InputNumber, Button, Typography, Card, message } from "antd";
+import { UserOutlined, MailOutlined, DollarOutlined } from "@ant-design/icons";
 import { useAuth } from "@/lib/auth";
 import { api, ApiError } from "@/lib/api";
 
 const { Title, Text } = Typography;
 
-interface Usuario {
-  id: number;
+interface PerfilFormValues {
+  nombre: string;
   email: string;
   ingreso_mensual: number | null;
-  created_at: string;
 }
 
 export default function MiPerfil() {
-  const { token } = useAuth();
-  const [perfil, setPerfil] = useState<Usuario | null>(null);
-  const [loading, setLoading] = useState(true);
+  const { user, refreshUser } = useAuth();
   const [saving, setSaving] = useState(false);
-  const [form] = Form.useForm();
+  const [form] = Form.useForm<PerfilFormValues>();
 
   useEffect(() => {
-    if (!token) return;
-    api
-      .get<Usuario>("/auth/me", { token })
-      .then((u) => {
-        setPerfil(u);
-        form.setFieldsValue({
-          email: u.email,
-          ingreso_mensual: u.ingreso_mensual,
-        });
-      })
-      .catch(() => {
-        message.warning("No se pudo cargar tu perfil");
-      })
-      .finally(() => setLoading(false));
-  }, [token, form]);
+    if (user) {
+      form.setFieldsValue({
+        nombre: user.nombre,
+        email: user.email,
+        ingreso_mensual: user.ingreso_mensual,
+      });
+    }
+  }, [user, form]);
 
-  const onFinish = async (values: { email?: string; ingreso_mensual?: number | null }) => {
+  const onFinish = async (values: PerfilFormValues) => {
     setSaving(true);
     try {
-      await api.put("/auth/me", values, { token });
+      await api.put("/usuarios/me", {
+        ingreso_mensual: values.ingreso_mensual ?? null,
+      });
+      await refreshUser();
       message.success("Perfil actualizado");
     } catch (err) {
       const detail =
@@ -52,14 +45,6 @@ export default function MiPerfil() {
       setSaving(false);
     }
   };
-
-  if (loading) {
-    return (
-      <div style={{ textAlign: "center", padding: 64 }}>
-        <Spin size="large" />
-      </div>
-    );
-  }
 
   return (
     <div>
@@ -74,18 +59,18 @@ export default function MiPerfil() {
           onFinish={onFinish}
           autoComplete="off"
         >
+          <Form.Item label="Nombre" name="nombre">
+            <Input prefix={<UserOutlined />} disabled style={{ color: "#000" }} />
+          </Form.Item>
+
           <Form.Item label="Correo electrónico" name="email">
-            <Input
-              prefix={<UserOutlined />}
-              disabled
-              style={{ color: "#000" }}
-            />
+            <Input prefix={<MailOutlined />} disabled style={{ color: "#000" }} />
           </Form.Item>
 
           <Form.Item
             label="Ingreso mensual"
             name="ingreso_mensual"
-            tooltip="Used to distribute household debts proportionally"
+            tooltip="Se usa para distribuir proporcionalmente las deudas del hogar"
           >
             <InputNumber
               style={{ width: "100%" }}

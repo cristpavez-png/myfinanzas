@@ -15,6 +15,10 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 1440
     JWT_RESET_TOKEN_EXPIRE_MINUTES: int = 60
     CORS_ORIGINS: list[str] = ["http://localhost:3000"]
+    AUTH_COOKIE_NAME: str = "myfinanzas_token"
+    # En producción (HTTPS cross-site, ej. Vercel + Railway) debe ser True:
+    # la cookie se emite con Secure y SameSite=None.
+    AUTH_COOKIE_SECURE: bool = False
 
 
 settings = Settings()

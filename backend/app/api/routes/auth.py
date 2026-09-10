@@ -1,6 +1,6 @@
 import logging
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Response, status
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 import jwt
@@ -26,6 +26,21 @@ from app.schemas.usuario import UsuarioOut
 logger = logging.getLogger("myfinanzas.auth")
 
 router = APIRouter(prefix="/auth", tags=["auth"])
+
+
+def _set_auth_cookie(response: Response, token: str) -> None:
+    # SameSite=Lax alcanza en desarrollo (localhost ignora el puerto al
+    # determinar same-site). En producción cross-site se requiere
+    # SameSite=None + Secure (AUTH_COOKIE_SECURE=True).
+    response.set_cookie(
+        key=settings.AUTH_COOKIE_NAME,
+        value=token,
+        max_age=settings.ACCESS_TOKEN_EXPIRE_MINUTES * 60,
+        path="/",
+        httponly=True,
+        secure=settings.AUTH_COOKIE_SECURE,
+        samesite="none" if settings.AUTH_COOKIE_SECURE else "lax",
+    )
 
 
 @router.post(
@@ -61,7 +76,11 @@ def register(payload: RegisterIn, db: Session = Depends(get_db)) -> Usuario:
 
 
 @router.post("/login", response_model=TokenOut)
-def login(payload: LoginIn, db: Session = Depends(get_db)) -> TokenOut:
+def login(
+    payload: LoginIn,
+    response: Response,
+    db: Session = Depends(get_db),
+) -> TokenOut:
     user = db.query(Usuario).filter(Usuario.email == payload.email.lower()).first()
     if user is None or not verify_password(payload.password, user.password_hash):
         raise HTTPException(
@@ -71,7 +90,14 @@ def login(payload: LoginIn, db: Session = Depends(get_db)) -> TokenOut:
         )
 
     token = create_access_token(subject=str(user.id))
+    _set_auth_cookie(response, token)
     return TokenOut(access_token=token)
+
+
+@router.post("/logout")
+def logout(response: Response) -> dict:
+    response.delete_cookie(key=settings.AUTH_COOKIE_NAME, path="/")
+    return {"message": "Sesión cerrada correctamente"}
 
 
 @router.post("/forgot-password")

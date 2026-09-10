@@ -9,17 +9,20 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import { api } from "@/lib/api";
+import { api, ApiError } from "@/lib/api";
 
 /* ── Types ────────────────────────────────────────────── */
 
-interface TokenResponse {
-  access_token: string;
-  token_type: string;
+export interface Usuario {
+  id: number;
+  nombre: string;
+  email: string;
+  ingreso_mensual: number | null;
+  created_at: string;
 }
 
 interface AuthContextValue {
-  token: string | null;
+  user: Usuario | null;
   loading: boolean;
   login: (email: string, password: string) => Promise<void>;
   register: (data: {
@@ -27,35 +30,58 @@ interface AuthContextValue {
     email: string;
     password: string;
   }) => Promise<void>;
-  logout: () => void;
+  logout: () => Promise<void>;
+  refreshUser: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
 
-const TOKEN_KEY = "myfinanzas_token";
-
 /* ── Provider ─────────────────────────────────────────── */
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [token, setToken] = useState<string | null>(null);
+  const [user, setUser] = useState<Usuario | null>(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const stored = localStorage.getItem(TOKEN_KEY);
-    if (stored) {
-      setToken(stored);
+  const refreshUser = useCallback(async () => {
+    try {
+      const me = await api.get<Usuario>("/usuarios/me");
+      setUser(me);
+    } catch (err) {
+      if (err instanceof ApiError && err.status === 401) {
+        setUser(null);
+      } else {
+        throw err;
+      }
     }
-    setLoading(false);
   }, []);
 
-  const login = useCallback(async (email: string, password: string) => {
-    const res = await api.post<TokenResponse>("/auth/login", {
-      email,
-      password,
-    });
-    localStorage.setItem(TOKEN_KEY, res.access_token);
-    setToken(res.access_token);
+  // Al cargar la app, la cookie httpOnly (si existe) determina la sesión.
+  useEffect(() => {
+    let cancelled = false;
+    api
+      .get<Usuario>("/usuarios/me")
+      .then((me) => {
+        if (!cancelled) setUser(me);
+      })
+      .catch(() => {
+        if (!cancelled) setUser(null);
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
   }, []);
+
+  const login = useCallback(
+    async (email: string, password: string) => {
+      // El backend setea la cookie httpOnly en la respuesta.
+      await api.post("/auth/login", { email, password });
+      await refreshUser();
+    },
+    [refreshUser],
+  );
 
   const register = useCallback(
     async (data: { nombre: string; email: string; password: string }) => {
@@ -64,14 +90,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     [],
   );
 
-  const logout = useCallback(() => {
-    localStorage.removeItem(TOKEN_KEY);
-    setToken(null);
+  const logout = useCallback(async () => {
+    try {
+      await api.post("/auth/logout");
+    } finally {
+      setUser(null);
+    }
   }, []);
 
   const value = useMemo(
-    () => ({ token, loading, login, register, logout }),
-    [token, loading, login, register, logout],
+    () => ({ user, loading, login, register, logout, refreshUser }),
+    [user, loading, login, register, logout, refreshUser],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
