@@ -13,7 +13,7 @@ export class ApiError extends Error {
 }
 
 interface RequestOptions extends Omit<RequestInit, "method" | "body"> {
-  token?: string;
+  token?: string | null;
 }
 
 async function request<T>(
