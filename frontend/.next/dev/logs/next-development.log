@@ -1,3 +1,13 @@
-{"timestamp":"00:00:01.101","source":"Server","level":"LOG","message":""}
-{"timestamp":"00:00:11.754","source":"Server","level":"LOG","message":"○ Compiling / ..."}
-{"timestamp":"00:00:14.160","source":"Browser","level":"INFO","message":"%cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold"}
+{"timestamp":"00:00:03.460","source":"Server","level":"LOG","message":""}
+{"timestamp":"00:00:08.502","source":"Server","level":"LOG","message":"○ Compiling / ..."}
+{"timestamp":"00:00:10.570","source":"Server","level":"ERROR","message":"Warning: [antd: Space] `direction` is deprecated. Please use `orientation` instead."}
+{"timestamp":"00:00:10.606","source":"Server","level":"ERROR","message":"Warning: [antd: Steps] `items.description` is deprecated. Please use `items.content` instead."}
+{"timestamp":"00:00:10.964","source":"Browser","level":"INFO","message":"%cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold"}
+{"timestamp":"00:00:11.145","source":"Browser","level":"ERROR","message":"Warning: [antd: Space] `direction` is deprecated. Please use `orientation` instead."}
+{"timestamp":"00:00:11.146","source":"Browser","level":"ERROR","message":"Warning: [antd: Steps] `items.description` is deprecated. Please use `items.content` instead."}
+{"timestamp":"00:00:11.265","source":"Server","level":"ERROR","message":"[browser] \"Warning: [antd: Space] `direction` is deprecated. Please use `orientation` instead.\" \"\\n\\u001b[31m    at Array.forEach (<anonymous>)\\u001b[39m\" \"\\u001b[2m(<anonymous>)\\u001b[22m\""}
+{"timestamp":"00:00:11.265","source":"Browser","level":"ERROR","message":"Warning: [antd: Space] `direction` is deprecated. Please use `orientation` instead. \"\\n\\u001b[31m    at Array.forEach (<anonymous>)\\u001b[39m\" \"\\u001b[2m(<anonymous>)\\u001b[22m\""}
+{"timestamp":"00:00:11.276","source":"Server","level":"ERROR","message":"[browser] \"Warning: [antd: Steps] `items.description` is deprecated. Please use `items.content` instead.\" \"\""}
+{"timestamp":"00:00:11.276","source":"Browser","level":"ERROR","message":"Warning: [antd: Steps] `items.description` is deprecated. Please use `items.content` instead. \"\""}
+{"timestamp":"00:00:20.801","source":"Browser","level":"INFO","message":"%cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold"}
+{"timestamp":"00:00:24.477","source":"Browser","level":"INFO","message":"%cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold"}
