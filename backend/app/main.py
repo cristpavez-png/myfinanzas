@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api.routes import auth, deudas, health, usuarios
+from app.api.routes import auth, deudas, grupos, health, usuarios
 from app.core.config import settings
 
 app = FastAPI(
@@ -22,3 +22,4 @@ app.include_router(health.router)
 app.include_router(auth.router)
 app.include_router(usuarios.router)
 app.include_router(deudas.router)
+app.include_router(grupos.router)

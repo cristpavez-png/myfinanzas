@@ -82,7 +82,7 @@ Contraseñas siempre con hash bcrypt en el backend.
 Sesión manejada con JWT en cookie httpOnly (SameSite=Lax en desarrollo; SameSite=None + Secure en producción vía `AUTH_COOKIE_SECURE=true`). El backend acepta `Authorization: Bearer` solo como fallback para pruebas/clientes de API; el frontend no guarda tokens en localStorage. Cierre de sesión vía POST /auth/logout.
 Un usuario nunca debe poder ver ni modificar datos (deudas, perfil) de otro usuario fuera de su grupo — validar esto en cada endpoint protegido, no solo en el frontend.
 Testing
-Backend: pytest para pruebas de endpoints y lógica de negocio (especialmente el motor de cálculo de distribución del Hito 4).
+Backend: pytest para pruebas de endpoints y lógica de negocio (especialmente el motor de cálculo de distribución del Hito 4). Comando: `pytest -q` desde `/backend` (26 pruebas: unidad del motor + endpoints de grupos). `tests/conftest.py` define `DATABASE_URL` SQLite antes de importar `app`.
 Frontend: pruebas manuales por sprint como mínimo; se puede incorporar Testing Library si el tiempo lo permite (no es bloqueante para el MVP).
 Estado actual del proyecto (hitos)
 Hito	Estado
@@ -90,7 +90,7 @@ H1 — Requisitos y planificación	Completado
 H2 — Diseño (arquitectura, ERD, mockups)	Completado
 H3 — Auth + CRUD de deudas (backend)	Completado
 H3 — Auth + CRUD de deudas (frontend, Ant Design)	En progreso
-H4 — Grupos y motor de distribución	Pendiente
+H4 — Grupos y motor de distribución	Completado
 H5 — Integración	Pendiente
 H6 — QA	Pendiente
 H7 — Documentación/portafolio	Pendiente
