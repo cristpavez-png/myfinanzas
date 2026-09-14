@@ -1,0 +1,23 @@
+services:
+  db:
+    image: mysql:8.0
+    container_name: myfinanzas_mysql
+    restart: always
+    environment:
+      # Debe coincidir con DATABASE_URL del backend (ver .env / .env.example):
+      # mysql+pymysql://root:password@localhost:3306/myfinanzas
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: myfinanzas
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-ppassword"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+      start_period: 30s
+
+volumes:
+  mysql_data:

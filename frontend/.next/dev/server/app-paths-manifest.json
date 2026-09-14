@@ -1,3 +1,8 @@
 {
-  "/page": "app/page.js"
+  "/(public)/login/page": "app/(public)/login/page.js",
+  "/(public)/register/page": "app/(public)/register/page.js",
+  "/page": "app/page.js",
+  "/panel/deudas/page": "app/panel/deudas/page.js",
+  "/panel/page": "app/panel/page.js",
+  "/panel/perfil/page": "app/panel/perfil/page.js"
 }

@@ -1,3 +1,32 @@
-{"timestamp":"00:00:01.101","source":"Server","level":"LOG","message":""}
-{"timestamp":"00:00:11.754","source":"Server","level":"LOG","message":"○ Compiling / ..."}
-{"timestamp":"00:00:14.160","source":"Browser","level":"INFO","message":"%cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold"}
+{"timestamp":"00:00:02.168","source":"Server","level":"LOG","message":""}
+{"timestamp":"00:09:25.325","source":"Server","level":"ERROR","message":"Warning: [antd: Space] `direction` is deprecated. Please use `orientation` instead."}
+{"timestamp":"00:09:25.369","source":"Server","level":"ERROR","message":"Warning: [antd: Steps] `items.description` is deprecated. Please use `items.content` instead."}
+{"timestamp":"00:09:25.677","source":"Browser","level":"INFO","message":"%cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold"}
+{"timestamp":"00:09:25.859","source":"Browser","level":"ERROR","message":"Warning: [antd: Space] `direction` is deprecated. Please use `orientation` instead."}
+{"timestamp":"00:09:25.859","source":"Browser","level":"ERROR","message":"Warning: [antd: Steps] `items.description` is deprecated. Please use `items.content` instead."}
+{"timestamp":"00:09:25.883","source":"Server","level":"ERROR","message":"[browser] \"Warning: [antd: Space] `direction` is deprecated. Please use `orientation` instead.\" \"\\n\\u001b[31m    at Array.forEach (<anonymous>)\\u001b[39m\" \"\\u001b[2m(<anonymous>)\\u001b[22m\""}
+{"timestamp":"00:09:25.884","source":"Browser","level":"ERROR","message":"Warning: [antd: Space] `direction` is deprecated. Please use `orientation` instead. \"\\n\\u001b[31m    at Array.forEach (<anonymous>)\\u001b[39m\" \"\\u001b[2m(<anonymous>)\\u001b[22m\""}
+{"timestamp":"00:09:25.906","source":"Server","level":"ERROR","message":"[browser] \"Warning: [antd: Steps] `items.description` is deprecated. Please use `items.content` instead.\" \"\""}
+{"timestamp":"00:09:25.907","source":"Browser","level":"ERROR","message":"Warning: [antd: Steps] `items.description` is deprecated. Please use `items.content` instead. \"\""}
+{"timestamp":"00:23:41.845","source":"Browser","level":"INFO","message":"%cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold"}
+{"timestamp":"00:25:42.730","source":"Browser","level":"INFO","message":"%cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold"}
+{"timestamp":"00:25:42.801","source":"Browser","level":"ERROR","message":"Warning: [antd: Space] `direction` is deprecated. Please use `orientation` instead."}
+{"timestamp":"00:25:42.803","source":"Server","level":"ERROR","message":"[browser] \"Warning: [antd: Space] `direction` is deprecated. Please use `orientation` instead.\" \"\\n\\u001b[31m    at Array.forEach (<anonymous>)\\u001b[39m\" \"\\u001b[2m(<anonymous>)\\u001b[22m\""}
+{"timestamp":"00:25:42.803","source":"Browser","level":"ERROR","message":"Warning: [antd: Space] `direction` is deprecated. Please use `orientation` instead. \"\\n\\u001b[31m    at Array.forEach (<anonymous>)\\u001b[39m\" \"\\u001b[2m(<anonymous>)\\u001b[22m\""}
+{"timestamp":"00:25:42.820","source":"Browser","level":"ERROR","message":"Warning: [antd: Steps] `items.description` is deprecated. Please use `items.content` instead."}
+{"timestamp":"00:25:42.821","source":"Server","level":"ERROR","message":"[browser] \"Warning: [antd: Steps] `items.description` is deprecated. Please use `items.content` instead.\" \"\""}
+{"timestamp":"00:25:42.821","source":"Browser","level":"ERROR","message":"Warning: [antd: Steps] `items.description` is deprecated. Please use `items.content` instead. \"\""}
+{"timestamp":"00:29:58.796","source":"Browser","level":"ERROR","message":"Warning: [antd: Statistic] `valueStyle` is deprecated. Please use `styles.content` instead."}
+{"timestamp":"00:29:58.857","source":"Server","level":"ERROR","message":"[browser] \"Warning: [antd: Statistic] `valueStyle` is deprecated. Please use `styles.content` instead.\" \"\\n\\u001b[31m    at Array.forEach (<anonymous>)\\u001b[39m\" \"\\u001b[2m(<anonymous>)\\u001b[22m\""}
+{"timestamp":"00:29:58.857","source":"Browser","level":"ERROR","message":"Warning: [antd: Statistic] `valueStyle` is deprecated. Please use `styles.content` instead. \"\\n\\u001b[31m    at Array.forEach (<anonymous>)\\u001b[39m\" \"\\u001b[2m(<anonymous>)\\u001b[22m\""}
+{"timestamp":"00:30:11.601","source":"Server","level":"LOG","message":"○ Compiling /panel/deudas ..."}
+{"timestamp":"00:30:30.554","source":"Browser","level":"ERROR","message":"Warning: Instance created by `useForm` is not connected to any Form element. Forget to pass `form` prop?"}
+{"timestamp":"00:30:30.587","source":"Server","level":"ERROR","message":"[browser] \"Warning: Instance created by `useForm` is not connected to any Form element. Forget to pass `form` prop?\" \"\""}
+{"timestamp":"00:30:30.587","source":"Browser","level":"ERROR","message":"Warning: Instance created by `useForm` is not connected to any Form element. Forget to pass `form` prop? \"\""}
+{"timestamp":"00:31:15.995","source":"Browser","level":"INFO","message":"%cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold"}
+{"timestamp":"00:31:16.065","source":"Server","level":"ERROR","message":"[browser] \"Warning: [antd: Space] `direction` is deprecated. Please use `orientation` instead.\" \"\\n\\u001b[31m    at Array.forEach (<anonymous>)\\u001b[39m\" \"\\u001b[2m(<anonymous>)\\u001b[22m\""}
+{"timestamp":"00:31:16.065","source":"Browser","level":"ERROR","message":"Warning: [antd: Space] `direction` is deprecated. Please use `orientation` instead. \"\\n\\u001b[31m    at Array.forEach (<anonymous>)\\u001b[39m\" \"\\u001b[2m(<anonymous>)\\u001b[22m\""}
+{"timestamp":"00:31:16.066","source":"Browser","level":"ERROR","message":"Warning: [antd: Space] `direction` is deprecated. Please use `orientation` instead."}
+{"timestamp":"00:31:16.092","source":"Browser","level":"ERROR","message":"Warning: [antd: Steps] `items.description` is deprecated. Please use `items.content` instead."}
+{"timestamp":"00:31:16.093","source":"Server","level":"ERROR","message":"[browser] \"Warning: [antd: Steps] `items.description` is deprecated. Please use `items.content` instead.\" \"\""}
+{"timestamp":"00:31:16.094","source":"Browser","level":"ERROR","message":"Warning: [antd: Steps] `items.description` is deprecated. Please use `items.content` instead. \"\""}
