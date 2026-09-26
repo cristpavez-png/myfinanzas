@@ -3,6 +3,7 @@
   "/(public)/register/page": "app/(public)/register/page.js",
   "/page": "app/page.js",
   "/panel/deudas/page": "app/panel/deudas/page.js",
+  "/panel/grupos/page": "app/panel/grupos/page.js",
   "/panel/page": "app/panel/page.js",
   "/panel/perfil/page": "app/panel/perfil/page.js"
 }

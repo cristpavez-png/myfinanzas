@@ -8,6 +8,7 @@ import {
   CreditCardOutlined,
   UserOutlined,
   LogoutOutlined,
+  TeamOutlined,
 } from "@ant-design/icons";
 import { useAuth } from "@/lib/auth";
 
@@ -17,6 +18,7 @@ const { Title } = Typography;
 const menuItems = [
   { key: "/panel", icon: <DashboardOutlined />, label: "Resumen" },
   { key: "/panel/deudas", icon: <CreditCardOutlined />, label: "Mis deudas" },
+  { key: "/panel/grupos", icon: <TeamOutlined />, label: "Mis grupos" },
   { key: "/panel/perfil", icon: <UserOutlined />, label: "Mi perfil" },
 ];
 

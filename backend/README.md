@@ -3,6 +3,7 @@
 API REST (FastAPI) para **MyFinanzas**, una app de gestión de deudas y gastos personales.
 
 Entrega **Hito 3**: MVP de autenticación (registro, login con JWT, recuperación de contraseña) y CRUD de deudas personales.
+**Hito 4**: grupos (hogares), miembros registrados o manuales y motor de distribución de deudas proporcional a los ingresos.
 
 ## Stack
 
@@ -25,7 +26,7 @@ python -m venv .venv
 pip install -r requirements.txt
 
 copy .env.example .env            # personalizar valores
-python -m alembic upgrade head    # aplicar migración 0001
+python -m alembic upgrade head    # aplicar migraciones (head = 0002)
 uvicorn app.main:app --reload     # http://127.0.0.1:8000
 ```
 
@@ -72,12 +73,39 @@ Documentación interactiva (Swagger) en `http://127.0.0.1:8000/docs`.
 
 Categorías: `arriendo`, `servicios`, `tarjeta_credito`, `transporte`, `comida`, `salud`, `educacion`, `otros`.
 
+### `grupo` (Hito 4)
+
+| Campo | Tipo | Notas |
+|---|---|---|
+| `id` | int PK | |
+| `nombre` | varchar(100) | |
+| `propietario_id` | int FK → usuario | `CASCADE` al eliminar |
+| `created_at` / `updated_at` | datetime | |
+
+### `grupo_miembro` (Hito 4)
+
+| Campo | Tipo | Notas |
+|---|---|---|
+| `id` | int PK | |
+| `grupo_id` | int FK → grupo | `CASCADE` |
+| `usuario_id` | int FK → usuario NULL | Miembro registrado |
+| `nombre` | varchar(100) NULL | Persona manual |
+| `ingreso_mensual` | decimal(12,2) | `> 0` |
+| `es_propietario` | bool | |
+| `created_at` | datetime | |
+
+Un miembro tiene **exactamente** un `usuario_id` **o** un `nombre`. Unicidad por grupo en `(grupo_id, usuario_id)` y `(grupo_id, nombre)`.
+
+### `deuda_hogar` (Hito 4)
+
+Misma forma que `deuda_personal` más `grupo_id` (FK → grupo, `CASCADE`) y `creada_por` (FK → usuario).
+
 ## Autenticación
 
-- Login devuelve un **JWT** (HS256) con `sub = usuario_id`.
-- Los endpoints protegidos requieren el header `Authorization: Bearer <token>`.
-- En el frontend (Next.js) el token NO se guarda en `localStorage`: se almacena en una cookie `httpOnly` y las server actions de Next lo reenvían al backend.
-- Estados posibles: `401` token ausente/inválido/expirado, `403` deuda de otro usuario, `404` recurso inexistente, `409` email duplicado, `422` validación, `400` token de recuperación inválido.
+- Login devuelve un **JWT** (HS256) con `sub = usuario_id` y lo setea como **cookie httpOnly** (`myfinanzas_token`, `Max-Age`, `SameSite=Lax` en desarrollo; `SameSite=None` + `Secure` con `AUTH_COOKIE_SECURE=true`).
+- Los endpoints protegidos leen primero la cookie; aceptan `Authorization: Bearer <token>` solo como fallback para clientes de API/pruebas.
+- Handler que emite/limpia la cookie: `_set_auth_cookie` en `app/api/routes/auth.py`. Cierre de sesión vía `POST /auth/logout`.
+- Estados posibles: `401` sin sesión, `403` recurso de otro usuario / no miembro del grupo, `404` recurso inexistente, `409` duplicado (email, miembro), `422` validación, `400` token de recuperación inválido.
 
 ---
 
@@ -86,13 +114,27 @@ Categorías: `arriendo`, `servicios`, `tarjeta_credito`, `transporte`, `comida`,
 | Método | Ruta | Auth | Descripción |
 |---|---|---|---|
 | POST | `/auth/register` | — | Crear cuenta |
-| POST | `/auth/login` | — | Iniciar sesión |
+| POST | `/auth/login` | — | Iniciar sesión (setea cookie) |
+| POST | `/auth/logout` | — | Cerrar sesión (limpia cookie) |
 | POST | `/auth/forgot-password` | — | Solicitar recuperación |
 | POST | `/auth/reset-password` | — | Cambiar contraseña |
-| GET | `/deudas` | Bearer | Listar deudas del usuario |
-| POST | `/deudas` | Bearer | Crear deuda |
-| PUT | `/deudas/{id}` | Bearer | Actualizar deuda |
-| DELETE | `/deudas/{id}` | Bearer | Eliminar deuda |
+| GET/PUT | `/usuarios/me` | cookie/Bearer | Perfil del usuario sesionado |
+| GET | `/deudas` | cookie/Bearer | Listar deudas del usuario |
+| POST | `/deudas` | cookie/Bearer | Crear deuda |
+| PUT | `/deudas/{id}` | cookie/Bearer | Actualizar deuda |
+| DELETE | `/deudas/{id}` | cookie/Bearer | Eliminar deuda |
+| POST | `/grupos` | cookie/Bearer | Crear grupo (quien crea es propietario) |
+| GET | `/grupos` | cookie/Bearer | Listar mis grupos (resumen) |
+| GET | `/grupos/{id}` | cookie/Bearer | Detalle: miembros + deudas del hogar |
+| PUT/DELETE | `/grupos/{id}` | cookie/Bearer | Renombrar / eliminar (propietario) |
+| POST | `/grupos/{id}/miembros` | cookie/Bearer | Agregar miembro (propietario) |
+| PUT | `/grupos/{id}/miembros/{m}` | cookie/Bearer | Editar ingreso (propietario o el propio miembro) |
+| DELETE | `/grupos/{id}/miembros/{m}` | cookie/Bearer | Quitar miembro (propietario) |
+| GET | `/grupos/{id}/deudas` | cookie/Bearer | Listar deudas del hogar |
+| POST | `/grupos/{id}/deudas` | cookie/Bearer | Crear deuda del hogar (cualquier miembro) |
+| PUT | `/grupos/{id}/deudas/{d}` | cookie/Bearer | Actualizar (propietario o quien la creó) |
+| DELETE | `/grupos/{id}/deudas/{d}` | cookie/Bearer | Eliminar (propietario o quien la creó) |
+| GET | `/grupos/{id}/distribucion` | cookie/Bearer | Motor de distribución (miembros) |
 
 ### POST `/auth/register`
 
@@ -266,25 +308,65 @@ Elimina la deuda.
 
 ---
 
+## Hito 4 — Grupos y motor de distribución
+
+### Agregar miembro — `POST /grupos/{id}/miembros`
+
+Un miembro se registra por `usuario_id` **o** `email`; si no, se crea manualmente con `nombre`.
+
+```json
+{ "email": "ana@dominio.cl", "ingreso_mensual": 1200000.0 }
+{ "nombre": "Pedro", "ingreso_mensual": 500000.0 }
+```
+
+- Para miembros registrados, si no se envía `ingreso_mensual` se usa el del perfil; si el perfil no lo declara → `422`.
+- Personas manuales: `ingreso_mensual` obligatorio.
+- Solo el propietario puede agregar/quitar miembros (`403` en otro caso).
+
+### Motor de distribución — `GET /grupos/{id}/distribucion`
+
+Distribuye cada deuda **pendiente** del hogar proporcionalmente al ingreso de cada miembro:
+
+```
+cuota_i = ingreso_i / Σ ingresos × monto
+```
+
+- Se trabaja en céntimos y la diferencia de redondeo se asigna al miembro de **mayor ingreso**, de modo que la suma de aportes siempre es exacta.
+- Si algún miembro no tiene ingreso `> 0` (suma de ingresos `≤ 0`) o no hay miembros → `422`.
+- Respuesta: `total_deudas`, `miembros` (total y % por miembro) y `por_deuda` (desglose con `aportes`).
+
+---
+
 ## Estructura del proyecto
 
 ```
 backend/
-├── alembic/            # migraciones (0001_esquema_inicial.py es head)
+├── alembic/            # migraciones (0002_grupos.py es head)
 ├── app/
 │   ├── main.py         # app FastAPI + CORS + routers
 │   ├── api/
-│   │   ├── deps.py     # get_current_user (JWT → Usuario)
-│   │   └── routes/     # auth.py, deudas.py
+│   │   ├── deps.py     # get_current_user (cookie httpOnly, Bearer de fallback)
+│   │   └── routes/     # auth.py, usuarios.py, deudas.py, grupos.py
 │   ├── core/           # config, database, security
-│   ├── models/         # usuario.py, deuda_personal.py
-│   └── schemas/        # auth.py, usuario.py, deuda.py (Pydantic)
+│   ├── models/         # usuario.py, deuda_personal.py, grupo.py,
+│   │                   # grupo_miembro.py, deuda_hogar.py
+│   ├── schemas/        # auth.py, usuario.py, deuda.py, deuda_hogar.py, grupo.py
+│   └── services/       # distribucion.py (motor de reparto por ingresos)
+├── tests/              # pytest: conftest.py + test_distribucion.py + test_grupos_api.py
 ├── requirements.txt
 └── .env.example
 ```
 
+## Testing
+
+```bash
+# desde backend/, con venv activo
+pytest -q          # 26 pruebas: motor (unidad) + endpoints de grupos (pytest)
+```
+
+`tests/conftest.py` define `DATABASE_URL=sqlite+pysqlite:///./test_myfinanzas.db` **antes** de importar `app`, y recrea las tablas por sesión.
+
 ## Notas
 
-- Pruebas E2E del backend se ejecutaron con SQLite por archivo (`test_backend.py`).
-- Compatible con SQLite durante desarrollo: `DATABASE_URL=sqlite+pysqlite:///./app.db`.
-- La migración `0001` crea tablas con `utf8mb4` y borrado en cascada de deudas al eliminar el usuario.
+- Compatible con SQLite durante desarrollo: `DATABASE_URL=sqlite+pysqlite:///./app.db` (SQLAlchemy usa `check_same_thread=False` de forma automática en URL `sqlite*`).
+- La migración `0001` crea tablas con `utf8mb4` y borrado en cascada de deudas al eliminar el usuario; `0002` agrega `grupo`, `grupo_miembro` y `deuda_hogar` (también `utf8mb4`, FKs `CASCADE`).

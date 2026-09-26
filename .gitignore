@@ -26,6 +26,11 @@ backend/.venv/
 backend/__pycache__/
 backend/**/*.pyc
 
+# base de datos local / pruebas
+backend/*.db
+backend/*.sqlite
+backend/*.sqlite3
+
 
 # production
 /build
