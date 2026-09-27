@@ -1,0 +1,13 @@
+.venv
+venv
+__pycache__
+*.pyc
+.env
+test_myfinanzas.db
+*.db
+*.sqlite
+*.sqlite3
+.pytest_cache
+tests
+README.md
+.git

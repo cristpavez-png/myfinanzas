@@ -9,12 +9,15 @@ class Settings(BaseSettings):
     )
 
     APP_ENV: str = "development"
-    DATABASE_URL: str = "mysql+pymysql://root:password@localhost:3306/myfinanzas"
+    DATABASE_URL: str = "postgresql://postgres:postgres@localhost:5432/myfinanzas"
     SECRET_KEY: str = "change-me-generate-a-strong-secret"
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 1440
     JWT_RESET_TOKEN_EXPIRE_MINUTES: int = 60
-    CORS_ORIGINS: list[str] = ["http://localhost:3000"]
+    CORS_ORIGINS: list[str] = [
+        "http://localhost:3000",
+        "https://myfinanzas.vercel.app",
+    ]
     AUTH_COOKIE_NAME: str = "myfinanzas_token"
     # En producción (HTTPS cross-site, ej. Vercel + Railway) debe ser True:
     # la cookie se emite con Secure y SameSite=None.

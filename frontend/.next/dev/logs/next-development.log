@@ -18,3 +18,4 @@
 {"timestamp":"00:03:11.431","source":"Browser","level":"ERROR","message":"Warning: Instance created by `useForm` is not connected to any Form element. Forget to pass `form` prop?"}
 {"timestamp":"00:03:11.447","source":"Server","level":"ERROR","message":"[browser] \"Warning: Instance created by `useForm` is not connected to any Form element. Forget to pass `form` prop?\" \"\""}
 {"timestamp":"00:03:11.447","source":"Browser","level":"ERROR","message":"Warning: Instance created by `useForm` is not connected to any Form element. Forget to pass `form` prop? \"\""}
+{"timestamp":"00:16:45.681","source":"Browser","level":"INFO","message":"%cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold"}

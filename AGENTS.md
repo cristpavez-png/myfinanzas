@@ -12,10 +12,10 @@ Stack tecnológico
 Capa	Tecnología
 Frontend	Next.js (TypeScript, App Router) + Ant Design (antd)
 Backend	FastAPI (Python)
-Base de datos	MySQL
+Base de datos	PostgreSQL (Supabase)
 ORM / migraciones	SQLAlchemy + Alembic
 Autenticación	JWT + bcrypt
-Despliegue	Vercel (frontend) + Railway (backend y MySQL)
+Despliegue	Vercel (frontend) + Railway (backend) + Supabase (PostgreSQL)
 Estructura del repositorio (monorepo)
 myfinanzas/
 ├── backend/          # API FastAPI
@@ -24,7 +24,7 @@ myfinanzas/
 │   │   ├── schemas/      # schemas Pydantic
 │   │   ├── routers/      # endpoints agrupados por dominio (auth, deudas, grupos...)
 │   │   └── services/     # lógica de negocio (ej. motor de cálculo de distribución)
-│   ├── alembic/       # migraciones de base de datos
+Base de datos	PostgreSQL (Supabase)
 │   ├── requirements.txt
 │   └── Dockerfile
 ├── frontend/         # Next.js + Ant Design
@@ -43,7 +43,7 @@ Backend:
 cd backend
 python -m venv venv && source venv/bin/activate
 pip install -r requirements.txt
-alembic upgrade head
+alembic upgrade head   # aplica migraciones (requiere DATABASE_URL PostgreSQL/Supabase en backend/.env)
 uvicorn app.main:app --reload
 
 Frontend:
@@ -62,7 +62,7 @@ Type hints obligatorios en todas las funciones.
 Validación de entrada/salida siempre vía schemas Pydantic (nunca exponer modelos SQLAlchemy directamente en las respuestas).
 Endpoints agrupados por dominio en routers/ (ej. auth_router.py, deudas_router.py).
 Nunca exponer password_hash ni otros campos sensibles en las respuestas.
-Migraciones siempre vía Alembic — no modificar el esquema de la base de datos directamente.
+Base de datos	PostgreSQL (Supabase)
 
 Frontend (Next.js + Ant Design):
 

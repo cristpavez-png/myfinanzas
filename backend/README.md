@@ -9,13 +9,13 @@ Entrega **Hito 3**: MVP de autenticación (registro, login con JWT, recuperació
 
 - **Python 3.13** + **FastAPI**
 - **SQLAlchemy 2.0** (ORM) + **Alembic** (migraciones)
-- **MySQL** vía `PyMySQL` (en desarrollo compatible con SQLite)
+- **PostgreSQL** vía `psycopg2-binary` (Supabase; SQLite solo para tests y desarrollo)
 - **bcrypt** para hash de contraseñas, **PyJWT** para tokens
 
 ## Requisitos
 
 - Python 3.13+
-- MySQL 8+ (o SQLite para desarrollo local)
+- PostgreSQL 15+ (Supabase)
 
 ## Puesta en marcha
 
@@ -26,7 +26,7 @@ python -m venv .venv
 pip install -r requirements.txt
 
 copy .env.example .env            # personalizar valores
-python -m alembic upgrade head    # aplicar migraciones (head = 0002)
+python -m alembic upgrade head    # aplicar migraciones (head = 0001, esquema Postgres)
 uvicorn app.main:app --reload     # http://127.0.0.1:8000
 ```
 
@@ -37,12 +37,12 @@ Documentación interactiva (Swagger) en `http://127.0.0.1:8000/docs`.
 | Variable | Default | Descripción |
 |---|---|---|
 | `APP_ENV` | `development` | Entorno de ejecución |
-| `DATABASE_URL` | `mysql+pymysql://root:password@localhost:3306/myfinanzas` | Conexión a la base de datos |
+| `DATABASE_URL` | `postgresql://usuario:password@db.PROYECTO.supabase.co:6543/postgres` | Conexión a la base (Supabase, Transaction pooler :6543). Sin credenciales reales en el repo |
 | `SECRET_KEY` | `change-me-...` | Secreto para firmar JWT (**cambiar en producción**) |
 | `ALGORITHM` | `HS256` | Algoritmo de firma JWT |
 | `ACCESS_TOKEN_EXPIRE_MINUTES` | `1440` | Vida de tokens de acceso (min) |
 | `JWT_RESET_TOKEN_EXPIRE_MINUTES` | `60` | Vida de tokens de recuperación (min) |
-| `CORS_ORIGINS` | `["http://localhost:3000"]` | Orígenes permitidos (JSON en `.env`) |
+| `CORS_ORIGINS` | `["http://localhost:3000","https://myfinanzas.vercel.app"]` | Orígenes permitidos (JSON en `.env`) |
 
 ## Modelo de datos
 
